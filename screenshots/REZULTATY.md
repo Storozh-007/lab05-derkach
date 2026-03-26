@@ -3,7 +3,7 @@
 
 ---
 
-## Структура таблиці users
+## Рисунок 1 - Структура таблиці users
 
 ```
 \d users
@@ -24,7 +24,7 @@
 
 ---
 
-## Структура таблиці accounts
+## Рисунок 2 - Структура таблиці accounts
 
 ```
 \d accounts
@@ -46,7 +46,7 @@
 
 ---
 
-## Структура таблиці transactions
+## Рисунок 3 - Структура таблиці transactions
 
 ```
 \d transactions
@@ -70,7 +70,7 @@
 
 ---
 
-## Дані таблиці users
+## Рисунок 4 - Дані таблиці users
 
 ```
 SELECT * FROM users;
@@ -88,29 +88,39 @@ SELECT * FROM users;
   7 | Дмитро Кравченко  | dmytro.kravchenko@email.com | 2024-07-22        | t
   8 | Софія Литвиненко  | sofia.lytvynenko@email.com  | 2024-08-14        | t
   9 | Андрій Мороз      | andriy.moroz@email.com      | 2024-09-08        | f
- 10 | Павло Деркач      | pavlo.derkach@email.com    | 2024-10-01        | t
+ 10 | Павло Деркач      | pavlo.derkach@email.com     | 2024-10-01        | t
 (10 rows)
 ```
 
 ---
 
-## Дані таблиці accounts
+## Рисунок 5 - Дані таблиці accounts
+
+```
+SELECT * FROM accounts LIMIT 10;
+```
 
 ```
  id | user_id | account_number |  balance  | account_type 
 ----+---------+----------------+-----------+--------------
-  1 |       1 | ACC001         |  1500.50 | checking
-  2 |       1 | ACC002         |  5000.00 | savings
-  3 |       1 | ACC003         |  2500.00 | credit
+  1 |       1 | ACC001         |  1850.75 | checking
+  2 |       1 | ACC002         |  5200.00 | savings
+  3 |       1 | ACC003         |  2700.50 | credit
+  4 |       2 | ACC004         |   950.25 | checking
+  5 |       2 | ACC005         |  1350.00 | savings
   ...
- 20 |      10 | ACC020         |  6100.50 | savings
- 21 |      10 | ACC021         |   850.00 | checking
+ 20 |      10 | ACC020         |  6350.50 | savings
+ 21 |      10 | ACC021         |   950.00 | checking
 (30 rows)
 ```
 
 ---
 
-## Дані таблиці categories
+## Рисунок 6 - Дані таблиці categories
+
+```
+SELECT * FROM categories;
+```
 
 ```
  id |      name       
@@ -130,19 +140,27 @@ SELECT * FROM users;
 
 ---
 
-## INNER JOIN результат
+## Рисунок 7 - INNER JOIN результат
 
 ```
-SELECT u.name, a.account_number, SUM(t.amount) AS total
+SELECT u.name, a.account_number, SUM(t.amount) AS total_amount
 FROM users u
 JOIN accounts a ON u.id = a.user_id
 JOIN transactions t ON a.id = t.account_id
 GROUP BY u.name, a.account_number;
 ```
 
+```
+     name      | account_number | total_amount 
+---------------+----------------+--------------
+ Іван Петренко | ACC001         |       250.00
+ Олександр...  | ...            |          ...
+(результат залежить від даних транзакцій)
+```
+
 ---
 
-## Агрегатні функції
+## Рисунок 8 - Агрегатні функції
 
 ```
 SELECT account_type, COUNT(*), SUM(balance), AVG(balance)
@@ -152,15 +170,15 @@ FROM accounts GROUP BY account_type;
 ```
  account_type | count |   sum    |   avg   
 --------------+-------+----------+---------
- credit       |     8 | 18950.50 | 2368.81
- savings      |    11 | 43604.25 | 3964.02
- checking     |    11 | 25103.00 | 2282.09
+ credit       |     8 | 20351.00 | 2543.88
+ savings      |    11 | 47879.25 | 4352.66
+ checking     |    11 | 27178.25 | 2470.75
 (3 rows)
 ```
 
 ---
 
-## Stored Procedure
+## Рисунок 9 - Stored Procedure
 
 ```
 CALL calculate_balance_proc(1, NULL);
@@ -169,35 +187,35 @@ CALL calculate_balance_proc(1, NULL);
 ```
  balance 
 --------
- 300.00
+ 250.00
 ```
 
 ---
 
-## Trigger перевірка
+## Рисунок 10 - Trigger перевірка
 
 ```
 SELECT balance FROM accounts WHERE id = 1;
 INSERT INTO transactions (account_id, amount, type, description) 
-VALUES (1, 200, 'credit', 'Test');
+VALUES (1, 200, 'credit', 'Тест');
 SELECT balance FROM accounts WHERE id = 1;
 ```
 
 ```
  balance 
 --------
- 1500.50   <- до INSERT
+ 250.00   <- до INSERT
 
-INSERT 0 1
+ INSERT 0 1
 
  balance 
 --------
- 1700.50   <- після INSERT (+200)
+ 450.00   <- після INSERT (+200)
 ```
 
 ---
 
-## Дані студента Деркач Павло
+## Рисунок 11 - Дані студента Деркач Павло
 
 ```
 SELECT u.name, a.account_number, a.balance, a.account_type
@@ -206,18 +224,18 @@ WHERE u.name = 'Павло Деркач';
 ```
 
 ```
-       name       | account_number |  balance  | account_type 
------------------+----------------+-----------+--------------
- Павло Деркач    | ACC020         |  6100.50 | savings
- Павло Деркач    | ACC021         |   850.00 | checking
+     name     | account_number |  balance  | account_type 
+--------------+----------------+-----------+--------------
+ Павло Деркач | ACC020         | 6350.50 | savings
+ Павло Деркач | ACC021         |  950.00 | checking
 (2 rows)
 
-Загальний баланс: $6,950.50
+Загальний баланс: $7,300.50
 ```
 
 ---
 
-## Баланси користувачів
+## Рисунок 12 - Баланси користувачів
 
 ```
 SELECT u.name, SUM(a.balance) as total
@@ -228,16 +246,16 @@ GROUP BY u.name ORDER BY total DESC;
 ```
        name        |  total   
 -------------------+----------
- Іван Петренко     | 13401.25
- Андрій Мороз      | 11300.50
- Дмитро Кравченко  | 11201.50
- Віктор Бондаренко |  8900.75
- Анна Шевченко     |  8700.25
- **Павло Деркач** |  **6950.50**
- Олег Сидоренко    |  7600.75
- Марія Коваленко   |  6450.75
- Софія Литвиненко  |  6450.75
- Ольга Гриценко    |  5600.75
+ Іван Петренко     | 14751.50
+ Дмитро Кравченко  | 12300.50
+ Андрій Мороз      | 11700.50
+ Віктор Бондаренко |  9750.25
+ Анна Шевченко     |  9451.25
+ **Павло Деркач**  |  **7300.50**
+ Олег Сидоренко    |  8126.25
+ Софія Литвиненко  |  7176.25
+ Марія Коваленко   |  7175.25
+ Ольга Гриценко    |  6326.25
 (10 rows)
 ```
 
