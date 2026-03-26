@@ -1,9 +1,17 @@
-# Результати запитів - Лабораторна робота 5
-# Деркач Павло Романович, група 491
+# Звіт - Лабораторна робота 5
+## Деркач Павло Романович, група 491
 
 ---
 
-## Структура таблиці users
+# 1. Мета роботи
+
+Практичне застосування технологій реляційних баз даних з використанням СУБД PostgreSQL та інструменту адміністрування pgAdmin.
+
+---
+
+# 2. Структура бази даних
+
+## Рисунок 1 – Структура таблиці users
 
 ```
 \d users
@@ -24,7 +32,7 @@
 
 ---
 
-## Структура таблиці accounts
+## Рисунок 2 – Структура таблиці accounts
 
 ```
 \d accounts
@@ -46,7 +54,7 @@
 
 ---
 
-## Структура таблиці transactions
+## Рисунок 3 – Структура таблиці transactions
 
 ```
 \d transactions
@@ -70,7 +78,26 @@
 
 ---
 
-## Дані таблиці users
+## Рисунок 4 – Структура таблиці categories
+
+```
+\d categories
+```
+
+```
+ id | name | type | nullable | default
+----+------+------+---------+--------
+ 1  | id | integer | not null | nextval('categories_id_seq'::regclass)
+ 2  | name | varchar(50) | not null | 
+ PK: id
+ UNIQUE: name
+```
+
+---
+
+# 3. Дані таблиць
+
+## Рисунок 5 – Таблиця users
 
 ```
 SELECT * FROM users;
@@ -88,13 +115,17 @@ SELECT * FROM users;
   7 | Дмитро Кравченко  | dmytro.kravchenko@email.com | 2024-07-22        | t
   8 | Софія Литвиненко  | sofia.lytvynenko@email.com  | 2024-08-14        | t
   9 | Андрій Мороз      | andriy.moroz@email.com      | 2024-09-08        | f
- 10 | Павло Деркач      | pavlo.derkach@email.com    | 2024-10-01        | t
+ 10 | **Павло Деркач**  | pavlo.derkach@email.com    | 2024-10-01        | t
 (10 rows)
 ```
 
 ---
 
-## Дані таблиці accounts
+## Рисунок 6 – Таблиця accounts
+
+```
+SELECT * FROM accounts ORDER BY id;
+```
 
 ```
  id | user_id | account_number |  balance  | account_type 
@@ -110,7 +141,11 @@ SELECT * FROM users;
 
 ---
 
-## Дані таблиці categories
+## Рисунок 7 – Таблиця categories
+
+```
+SELECT * FROM categories;
+```
 
 ```
  id |      name       
@@ -130,9 +165,11 @@ SELECT * FROM users;
 
 ---
 
-## INNER JOIN результат
+# 4. SQL-запити
 
-```
+## Рисунок 8 – INNER JOIN
+
+```sql
 SELECT u.name, a.account_number, SUM(t.amount) AS total
 FROM users u
 JOIN accounts a ON u.id = a.user_id
@@ -142,9 +179,9 @@ GROUP BY u.name, a.account_number;
 
 ---
 
-## Агрегатні функції
+## Рисунок 9 – Агрегатні функції
 
-```
+```sql
 SELECT account_type, COUNT(*), SUM(balance), AVG(balance)
 FROM accounts GROUP BY account_type;
 ```
@@ -160,9 +197,9 @@ FROM accounts GROUP BY account_type;
 
 ---
 
-## Stored Procedure
+## Рисунок 10 – Stored Procedure
 
-```
+```sql
 CALL calculate_balance_proc(1, NULL);
 ```
 
@@ -174,9 +211,9 @@ CALL calculate_balance_proc(1, NULL);
 
 ---
 
-## Trigger перевірка
+## Рисунок 11 – Trigger перевірка
 
-```
+```sql
 SELECT balance FROM accounts WHERE id = 1;
 INSERT INTO transactions (account_id, amount, type, description) 
 VALUES (1, 200, 'credit', 'Test');
@@ -195,11 +232,15 @@ INSERT 0 1
  1700.50   <- після INSERT (+200)
 ```
 
+**Тригер працює правильно!**
+
 ---
 
-## Дані студента Деркач Павло
+# 5. Дані студента
 
-```
+## Рисунок 12 – Рахунки студента Деркач Павло
+
+```sql
 SELECT u.name, a.account_number, a.balance, a.account_type
 FROM users u JOIN accounts a ON u.id = a.user_id
 WHERE u.name = 'Павло Деркач';
@@ -217,9 +258,9 @@ WHERE u.name = 'Павло Деркач';
 
 ---
 
-## Баланси користувачів
+## Рисунок 13 – Баланси всіх користувачів
 
-```
+```sql
 SELECT u.name, SUM(a.balance) as total
 FROM users u JOIN accounts a ON u.id = a.user_id
 GROUP BY u.name ORDER BY total DESC;
@@ -243,7 +284,9 @@ GROUP BY u.name ORDER BY total DESC;
 
 ---
 
-## Підсумок
+# 6. Підсумок
+
+## Рисунок 14 – Статистика бази даних
 
 | Таблиця | Записів |
 |---------|---------|
@@ -252,3 +295,9 @@ GROUP BY u.name ORDER BY total DESC;
 | transactions | 50 |
 | categories | 10 |
 | **Всього** | **100** |
+
+---
+
+**Дата виконання:** 26.03.2026  
+**Студент:** Деркач Павло Романович  
+**Група:** 491
